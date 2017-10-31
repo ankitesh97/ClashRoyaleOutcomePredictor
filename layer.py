@@ -51,3 +51,13 @@ class NDI:
     def update_synthetic_weights(self, true_gradient):
         change = self.synthetic_gradient - self.true_gradient
         self.weights_synthetic -= np.outer(change, self.output) * alpha_synthetic
+        
+        
+    def normal_update(self,d_out):
+        self.weights += np.outer(self.output_delta_synthetic, self.input) * alpha
+        self.bias += self.output_delta * alpha
+        output_delta = d_out * self.nonlin_deriv(self.output)
+        to_send = np.dot(self.output_delta.reshape(1,-1), self.weights)
+        self.weights -= np.outer(output_delta, self.input) * alpha
+        self.bias -= output_delta * alpha
+        return to_send
